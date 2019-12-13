@@ -11,6 +11,9 @@ import 'element-ui/lib/theme-chalk/index.css';
 //注册element-ui
 Vue.use(ElementUI);
 
+// 导入初始化css
+import './style/base.css'
+
 Vue.config.productionTip = false
 
 new Vue({
