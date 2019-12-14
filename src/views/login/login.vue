@@ -33,7 +33,7 @@
             </el-col>
             <!-- 验证码图片 -->
             <el-col class="captcha" :span="8">
-              <img src="../../assets/login-log.png" alt />
+              <img @click="newCaptcha" :src="captchaUrl" alt />
             </el-col>
           </el-row>
         </el-form-item>
@@ -60,6 +60,9 @@
 </template>
 
 <script>
+// 导入axios
+import axios from "axios";
+
 export default {
   data() {
     // 手机号判断
@@ -76,16 +79,17 @@ export default {
       }
     };
     return {
+      // 表单数据
       form: {
         phone: "",
         password: "",
         captcha: "",
         checked: false
       },
-      ruleForm: {},
+      // 表单规则
       rules: {
         // 手机号
-        phone: [{ required: true, validator: checkedPhone, trigger: "change" }],
+        phone: [{ required: true, validator: checkedPhone, trigger: "blur" }],
         // 密码
         password: [
           {
@@ -114,23 +118,47 @@ export default {
             trigger: "change"
           }
         ]
-      }
+      },
+      // 验证码接口
+      captchaUrl: process.env.VUE_APP_baseUrl + "/captcha?type=login"
     };
   },
   methods: {
-    // 点击登录按钮做的判断
+    // 点击登录按钮做的表单验证
     submitForm() {
       if (this.form.checked == true) {
         this.$refs.form.validate(valid => {
+          // 登录成功
           if (valid) {
-            this.$message.success('登录成功')
+            // window.console.log(this.form.phone)
+             window.console.log(this.form.captcha)
+
+            axios({
+              url: process.env.VUE_APP_baseUrl + "/login",
+              method: "post",
+              // 因为基地址和 当前路径不同源, 但是后台已经处理了跨域的问题, 但是cook令牌带不过去, 所以要加上这句代码
+              withCredentials: true,
+
+              data: {
+                phone: this.form.phone,
+                password: this.form.password,
+                code: this.form.captcha
+              }
+            }).then(res => {
+              //成功回调
+              window.console.log(res);
+            });
           } else {
-            this.$message.error('输入的内容有误或者不全')
+            this.$message.error("输入的内容有误或者不全");
           }
         });
-      }else {
-        this.$message.warning('请同意用户协议')
+      } else {
+        this.$message.warning("请同意用户协议");
       }
+    },
+    // 点击验证码切换 因为浏览器缓存的原因 在后面加一个 时间戳 就可以了
+    newCaptcha() {
+      this.captchaUrl = this.captchaUrl + Date.now();
     }
   }
 };

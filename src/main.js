@@ -14,6 +14,9 @@ Vue.use(ElementUI);
 // 导入初始化css
 import './style/base.css'
 
+// 接收基地址
+// window.console.log(process.env.VUE_APP_info)
+
 Vue.config.productionTip = false
 
 new Vue({
