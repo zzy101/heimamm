@@ -10,13 +10,13 @@
         <span class="sub-title">用户登录</span>
       </div>
       <!-- 登录表单 -->
-      <el-form class="login-from" ref="form" :model="form">
+      <el-form class="login-from" status-icon :rules="rules" ref="form" :model="form">
         <!-- 用户名 -->
-        <el-form-item>
-          <el-input placeholder="请输入用户名" prefix-icon="el-icon-user" v-model="form.name"></el-input>
+        <el-form-item prop="phone">
+          <el-input placeholder="请输入用户名" prefix-icon="el-icon-user" v-model="form.phone"></el-input>
         </el-form-item>
         <!-- 密码 -->
-        <el-form-item>
+        <el-form-item prop="password">
           <el-input
             show-password
             placeholder="请输入密码"
@@ -25,7 +25,7 @@
           ></el-input>
         </el-form-item>
         <!-- 验证码 -->
-        <el-form-item>
+        <el-form-item prop="captcha">
           <el-row>
             <!-- 验证码输入框 -->
             <el-col :span="16">
@@ -39,7 +39,7 @@
         </el-form-item>
         <!-- 用户协议 -->
         <el-form-item>
-          <el-checkbox v-model="checked">
+          <el-checkbox v-model="form.checked">
             我已阅读并同意
             <el-link type="primary">用户协议</el-link>和
             <el-link type="primary">隐私条款</el-link>
@@ -47,7 +47,7 @@
         </el-form-item>
         <!-- 按钮 -->
         <el-form-item>
-          <el-button type="primary">登录</el-button>
+          <el-button type="primary" @click="submitForm">登录</el-button>
           <el-button class="register" type="success">注册</el-button>
         </el-form-item>
       </el-form>
@@ -62,21 +62,76 @@
 <script>
 export default {
   data() {
-    return {
-      form: {
-        name: "",
-        password: "",
-        captcha: "",
-        checked: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: ""
+    // 手机号判断
+    var checkedPhone = (rule, value, callback) => {
+      if (value == "") {
+        return callback(new Error("手机号不能为空"));
+      } else {
+        const reg = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+        if (reg.test(value) == false) {
+          callback(new Error("手机格式错误"));
+        } else {
+          callback();
+        }
       }
     };
+    return {
+      form: {
+        phone: "",
+        password: "",
+        captcha: "",
+        checked: false
+      },
+      ruleForm: {},
+      rules: {
+        // 手机号
+        phone: [{ required: true, validator: checkedPhone, trigger: "change" }],
+        // 密码
+        password: [
+          {
+            required: true,
+            message: "请输入密码",
+            trigger: "blur"
+          },
+          {
+            min: 6,
+            max: 16,
+            message: "长度在 6 到 16 个字符",
+            trigger: "change"
+          }
+        ],
+        // 验证码
+        captcha: [
+          {
+            required: true,
+            message: "请输入验证码",
+            trigger: "blur"
+          },
+          {
+            min: 4,
+            max: 4,
+            message: "长度在 4 个字符",
+            trigger: "change"
+          }
+        ]
+      }
+    };
+  },
+  methods: {
+    // 点击登录按钮做的判断
+    submitForm() {
+      if (this.form.checked == true) {
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            this.$message.success('登录成功')
+          } else {
+            this.$message.error('输入的内容有误或者不全')
+          }
+        });
+      }else {
+        this.$message.warning('请同意用户协议')
+      }
+    }
   }
 };
 </script>
@@ -151,13 +206,13 @@ export default {
       }
       /* 按钮样式 */
       .el-button {
-          width: 100%;
-          margin: 0;
-          font-size: 16px;
+        width: 100%;
+        margin: 0;
+        font-size: 16px;
       }
       .register {
-              margin-top: 26px;
-          }
+        margin-top: 26px;
+      }
     }
   }
 }
