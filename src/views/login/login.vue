@@ -64,6 +64,7 @@
           <el-form-item  label="头像" :label-width="formLabelWidth" prop="icon">
             <el-upload
               class="avatar-uploader"
+              name='image'
               action="http://127.0.0.1/heimamm/public/uploads"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
@@ -270,7 +271,8 @@ export default {
       // 登录模块验证码接口
       captchaUrl: process.env.VUE_APP_baseUrl + "/captcha?type=login",
       imageUrl: "", //头像路径
-      registerSendsms: `${process.env.VUE_APP_baseUrl}/captcha?type=sendsms` //注册模块 图形码
+      registerSendsms: `${process.env.VUE_APP_baseUrl}/captcha?type=sendsms`, //注册模块 图形码
+      regIconUrl:'' //响应回来的头像参数
     };
   },
   methods: {
@@ -312,7 +314,7 @@ export default {
     },
     // 头像功能 - 上传成功
     handleAvatarSuccess(res, file) {
-      window.console.log(res)
+      this.regIconUrl = res.data.file_path  
       this.imageUrl = URL.createObjectURL(file.raw);
     },
     // 头像功能 - 上传规则
