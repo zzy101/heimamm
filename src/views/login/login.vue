@@ -109,14 +109,18 @@
               </el-form-item>
             </el-col>
             <el-col :offset="1" :span="7">
-              <el-button :disabled="isDisabled != 0"  @click="getRegCpatcha" class="registerCpatcha">{{isDisabled?`发送验证码(${isDisabled})`:'发送验证码'}}</el-button>
+              <el-button
+                :disabled="isDisabled != 0"
+                @click="getRegCpatcha"
+                class="registerCpatcha"
+              >{{isDisabled?`发送验证码(${isDisabled})`:'发送验证码'}}</el-button>
             </el-col>
           </el-row>
         </el-form>
         <!-- 底部按钮 -->
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+          <el-button type="primary" @click="submitRegForm">确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -259,17 +263,21 @@ export default {
             trigger: "change"
           }
         ],
-        // 头像
-        icon:[{
-          required:true
-        }]
+        // 验证码
+        captcha: [
+          {
+            required: true,
+            message: "请输入验证码",
+            trigger: "blur"
+          }
+        ]
       },
       // 登录模块验证码接口
       captchaUrl: process.env.VUE_APP_baseUrl + "/captcha?type=login",
       imageUrl: "", //头像路径
       registerSendsms: `${process.env.VUE_APP_baseUrl}/captcha?type=sendsms`, //注册模块 图形码
-      regIconUrl:'' ,//响应回来的头像参数
-      isDisabled:0, //短信验证码是否禁用
+      regIconUrl: "", //响应回来的头像参数
+      isDisabled: 0 //短信验证码是否禁用
     };
   },
   methods: {
@@ -311,7 +319,7 @@ export default {
     },
     // 头像功能 - 上传成功
     handleAvatarSuccess(res, file) {
-      this.regIconUrl = res.data.file_path  
+      this.regIconUrl = res.data.file_path;
       this.imageUrl = URL.createObjectURL(file.raw);
     },
     // 头像功能 - 上传规则
@@ -337,43 +345,85 @@ export default {
     // 点击获取注册界面短信验证码
     getRegCpatcha() {
       // 判断图形码
-      if(this.regForm.handover.length != 4) {
-        this.$message.error('请填写图形码')
-        return
+      if (this.regForm.handover.length != 4) {
+        this.$message.error("请填写图形码");
+        return;
       }
       // 判断手机号
       let reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
-      if(reg.test(this.regForm.phone)) {
+      if (reg.test(this.regForm.phone)) {
         // 成功之后在发请求 -- 请求验证码
         axios({
-        url:process.env.VUE_APP_baseUrl + '/sendsms',
-        method:'post',
-        withCredentials: true,
-        data: {
-          code : this.regForm.handover,
-          phone : this.regForm.phone
-        },
-      }).then(res=>{
-        //成功回调
-        window.console.log(res)
-        if(res.data.code == 200) {
-          this.handoverRegPic()
-          this.$message.success('验证码为:'+res.data.data.captcha)
-          // 请求成功之后验证码倒计时
-          this.isDisabled = 60;
-          var time = setInterval(()=>{
-            this.isDisabled --;
-            if(this.isDisabled == 0) {
-              clearInterval(time)
+          url: process.env.VUE_APP_baseUrl + "/sendsms",
+          method: "post",
+          withCredentials: true,
+          data: {
+            code: this.regForm.handover,
+            phone: this.regForm.phone
+          }
+        }).then(res => {
+          //成功回调
+          window.console.log(res);
+           this.handoverRegPic()
+          if (res.data.code == 200) {
+            // 触发随机图形码
+            this.$message.success("验证码为:" + res.data.data.captcha);
+            // 请求成功之后验证码倒计时
+            this.isDisabled = 60;
+            var time = setInterval(() => {
+              this.isDisabled--;
+              if (this.isDisabled == 0) {
+                clearInterval(time);
+              }
+            }, 100);
+          } else if(res.data.code == 0){
+            this.$message.error(res.data.message);
+          }
+        });
+      } else {
+        this.$message.error("手机号有误");
+      }
+    },
+    // 完成注册表单
+    submitRegForm() {
+      this.$refs.registerForm.validate(valid => {
+        // 登录成功
+        if (valid) {
+          // window.console.log(this.form.phone)
+          window.console.log(this.regForm.captcha);
+          window.console.log(this.regIconUrl);
+
+          axios({
+            url: process.env.VUE_APP_baseUrl + "/register",
+            method: "post",
+            // 因为基地址和 当前路径不同源, 但是后台已经处理了跨域的问题, 但是cook令牌带不过去, 所以要加上这句代码
+            withCredentials: true,
+
+            data: {
+              username: this.regForm.name,
+              phone: this.regForm.phone,
+              email: this.regForm.email,
+              avatar: this.regIconUrl,
+              password: this.regForm.password,
+              code: this.regForm.captcha
             }
-          },100)
-        }else {
-          this.$message.error('验证码错误')
+          }).then(res => {
+            //成功回调
+            window.console.log(res);
+            // 让数据为空
+            this.imageUrl = "";
+            this.regForm.name = "";
+            this.regForm.phone = "";
+            this.regForm.email = "";
+            this.regForm.password = "";
+            this.regForm.captcha = "";
+            this.dialogFormVisible = false;
+            this.$message.success('注册成功')
+          });
+        } else {
+          this.$message.error("输入的内容有误或者不全");
         }
       });
-      }else {
-        this.$message.error('手机号有误')
-      }
     }
   }
 };
