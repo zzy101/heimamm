@@ -61,10 +61,10 @@
       >
         <el-form :model="regForm" :rules="registerRules" ref="registerForm">
           <!-- 头像 -->
-          <el-form-item  label="头像" :label-width="formLabelWidth" prop="icon">
+          <el-form-item label="头像" :label-width="formLabelWidth" prop="icon">
             <el-upload
               class="avatar-uploader"
-              name='image'
+              name="image"
               action="http://127.0.0.1/heimamm/public/uploads"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
@@ -104,12 +104,12 @@
           <!-- 验证码 -->
           <el-row>
             <el-col :span="16">
-              <el-form-item label="验证码" :label-width="formLabelWidth" prop="captcha">
+              <el-form-item required label="验证码" :label-width="formLabelWidth" prop="captcha">
                 <el-input v-model="regForm.captcha" autocomplete="off"></el-input>
               </el-form-item>
             </el-col>
             <el-col :offset="1" :span="7">
-              <el-button @click="getRegCpatcha" class="registerCpatcha">发送验证码</el-button>
+              <el-button :disabled="isDisabled != 0"  @click="getRegCpatcha" class="registerCpatcha">{{isDisabled?`发送验证码(${isDisabled})`:'发送验证码'}}</el-button>
             </el-col>
           </el-row>
         </el-form>
@@ -259,10 +259,6 @@ export default {
             trigger: "change"
           }
         ],
-        // 验证码
-        captcha:[{
-          required:true
-        }],
         // 头像
         icon:[{
           required:true
@@ -272,7 +268,8 @@ export default {
       captchaUrl: process.env.VUE_APP_baseUrl + "/captcha?type=login",
       imageUrl: "", //头像路径
       registerSendsms: `${process.env.VUE_APP_baseUrl}/captcha?type=sendsms`, //注册模块 图形码
-      regIconUrl:'' //响应回来的头像参数
+      regIconUrl:'' ,//响应回来的头像参数
+      isDisabled:0, //短信验证码是否禁用
     };
   },
   methods: {
@@ -339,16 +336,44 @@ export default {
     },
     // 点击获取注册界面短信验证码
     getRegCpatcha() {
-      // axios({
-      //   url:process.env.VUE_APP_baseUrl + '/sendsms',
-      //   method:'post',
-      //   data: {
-      //     code :
-      //   },
-      // }).then(res=>{
-      //   //成功回调
-      //   console.log(res)
-      // });
+      // 判断图形码
+      if(this.regForm.handover.length != 4) {
+        this.$message.error('请填写图形码')
+        return
+      }
+      // 判断手机号
+      let reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
+      if(reg.test(this.regForm.phone)) {
+        // 成功之后在发请求 -- 请求验证码
+        axios({
+        url:process.env.VUE_APP_baseUrl + '/sendsms',
+        method:'post',
+        withCredentials: true,
+        data: {
+          code : this.regForm.handover,
+          phone : this.regForm.phone
+        },
+      }).then(res=>{
+        //成功回调
+        window.console.log(res)
+        if(res.data.code == 200) {
+          this.handoverRegPic()
+          this.$message.success('验证码为:'+res.data.data.captcha)
+          // 请求成功之后验证码倒计时
+          this.isDisabled = 60;
+          var time = setInterval(()=>{
+            this.isDisabled --;
+            if(this.isDisabled == 0) {
+              clearInterval(time)
+            }
+          },100)
+        }else {
+          this.$message.error('验证码错误')
+        }
+      });
+      }else {
+        this.$message.error('手机号有误')
+      }
     }
   }
 };
