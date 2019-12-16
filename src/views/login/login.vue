@@ -48,9 +48,76 @@
         <!-- 按钮 -->
         <el-form-item>
           <el-button type="primary" @click="submitForm">登录</el-button>
-          <el-button class="register" type="success">注册</el-button>
+          <el-button class="register" @click="dialogFormVisible = true" type="success">注册</el-button>
         </el-form-item>
       </el-form>
+      <!-- 注册表单 -->
+      <el-dialog
+        class="registerForm"
+        title="用户注册"
+        :visible.sync="dialogFormVisible"
+        center
+        width="30%"
+      >
+        <el-form :model="form">
+          <!-- 头像 -->
+          <el-form-item label="头像" :label-width="formLabelWidth">
+            <el-upload
+              class="avatar-uploader"
+              action="http://127.0.0.1/heimamm/public/uploads"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </el-form-item>
+          <!-- 昵称 -->
+          <el-form-item label="昵称" :label-width="formLabelWidth">
+            <el-input v-model="form.name" autocomplete="off"></el-input>
+          </el-form-item>
+          <!-- 邮箱 -->
+          <el-form-item label="邮箱" :label-width="formLabelWidth">
+            <el-input v-model="form.email" autocomplete="off"></el-input>
+          </el-form-item>
+          <!-- 手机 -->
+          <el-form-item label="手机" :label-width="formLabelWidth">
+            <el-input v-model="form.name" autocomplete="off"></el-input>
+          </el-form-item>
+          <!-- 密码 -->
+          <el-form-item label="密码" :label-width="formLabelWidth">
+            <el-input v-model="form.name" autocomplete="off"></el-input>
+          </el-form-item>
+          <!-- 图形码 -->
+          <el-row>
+            <el-col :span="16">
+              <el-form-item label="图形码" :label-width="formLabelWidth">
+                <el-input v-model="form.name" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :offset="1" :span="7">
+              <img @click="handoverRegPic" class="registerPic" :src="registerSendsms" alt />
+            </el-col>
+          </el-row>
+          <!-- 验证码 -->
+          <el-row>
+            <el-col :span="16">
+              <el-form-item label="验证码" :label-width="formLabelWidth">
+                <el-input v-model="form.name" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :offset="1" :span="7">
+              <el-button class="registerCpatcha">发送验证码</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+        <!-- 底部按钮 -->
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        </div>
+      </el-dialog>
     </div>
     <!-- 右边的图片 -->
     <div class="login-img">
@@ -81,11 +148,14 @@ export default {
     return {
       // 表单数据
       form: {
-        phone: "",
-        password: "",
-        captcha: "",
-        checked: false
+        phone: "", //手机号
+        password: "", //密码
+        captcha: "", //验证码
+        checked: false, //复选框
+        name: ""
       },
+      dialogFormVisible: false, //是否打开弹出框
+      formLabelWidth: "60px",
       // 表单规则
       rules: {
         // 手机号
@@ -119,8 +189,10 @@ export default {
           }
         ]
       },
-      // 验证码接口
-      captchaUrl: process.env.VUE_APP_baseUrl + "/captcha?type=login"
+      // 登录模块验证码接口
+      captchaUrl: process.env.VUE_APP_baseUrl + "/captcha?type=login",
+      imageUrl: "" ,//头像路径
+      registerSendsms: `${process.env.VUE_APP_baseUrl}/captcha?type=sendsms`, //注册模块 图形码
     };
   },
   methods: {
@@ -131,7 +203,7 @@ export default {
           // 登录成功
           if (valid) {
             // window.console.log(this.form.phone)
-             window.console.log(this.form.captcha)
+            window.console.log(this.form.captcha);
 
             axios({
               url: process.env.VUE_APP_baseUrl + "/login",
@@ -156,9 +228,31 @@ export default {
         this.$message.warning("请同意用户协议");
       }
     },
-    // 点击验证码切换 因为浏览器缓存的原因 在后面加一个 时间戳 就可以了
+    // 点击登录页面验证码切换 因为浏览器缓存的原因 在后面加一个 时间戳 就可以了
     newCaptcha() {
       this.captchaUrl = this.captchaUrl + Date.now();
+    },
+    // 头像功能
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw);
+    },
+    // 头像功能
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === "image/jpeg" || file.type === "image/png";
+      const isLt2M = file.size / 1024 < 500;
+      window.console.log(file);
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 500KB!");
+      }
+      return isJPG && isLt2M;
+    },
+    // 点击注册页面图形码切换 因为浏览器缓存的原因 在后面加一个 时间戳 就可以了
+    handoverRegPic(){
+      window.console.log('1')
+      this.registerSendsms = `${process.env.VUE_APP_baseUrl}/captcha?type=sendsms&${Date.now()}`
     }
   }
 };
@@ -241,6 +335,71 @@ export default {
       .register {
         margin-top: 26px;
       }
+    }
+
+    /* 注册表单 */
+    .registerForm .el-dialog {
+      width: 603px;
+      /* 标题 */
+      .el-dialog__header {
+        text-align: center;
+        background: linear-gradient(to right, #01c5fa, #1395fa);
+        padding: 15px;
+
+        /* 关闭右边的叉叉 */
+        .el-dialog__close {
+          display: none;
+        }
+
+        /* 标题颜色 */
+        .el-dialog__title {
+          color: white;
+        }
+      }
+    }
+  }
+
+  /* 注册模块 */
+  .registerForm {
+    /* 顶部头像 */
+    .avatar-uploader {
+      text-align: center;
+    }
+    .avatar-uploader .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .avatar-uploader .el-upload:hover {
+      border-color: #409eff;
+    }
+    .avatar-uploader-icon {
+      font-size: 28px;
+      color: #8c939d;
+      width: 178px;
+      height: 178px;
+      line-height: 178px;
+      text-align: center;
+    }
+    .avatar {
+      width: 178px;
+      height: 178px;
+      display: block;
+    }
+    /* 图形码的图片 */
+    .registerPic {
+      width: 100%;
+      height: 40px;
+    }
+    /* 验证码按钮 */
+    .registerCpatcha {
+      width: 100%;
+    }
+    /* 底部确认按钮 */
+    .el-dialog__footer {
+      align-content: center;
     }
   }
 }
