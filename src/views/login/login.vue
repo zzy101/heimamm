@@ -133,7 +133,10 @@
 
 <script>
 // 导入axios
-import axios from "axios";
+// import axios from "axios";
+
+// 导入login的抽取API层
+import { loginFrom, note, registerFrom } from "../../API/login.js";
 
 export default {
   data() {
@@ -180,8 +183,6 @@ export default {
         handover: "", //图形码
         captcha: "" //验证码
       },
-      dialogFormVisible: false, //是否打开弹出框
-      formLabelWidth: "65px",
       // 登录表单规则
       rules: {
         // 手机号
@@ -272,8 +273,9 @@ export default {
           }
         ]
       },
-      // 登录模块验证码接口
-      captchaUrl: process.env.VUE_APP_baseUrl + "/captcha?type=login",
+      dialogFormVisible: false, //是否打开弹出框
+      formLabelWidth: "65px",
+      captchaUrl: process.env.VUE_APP_baseUrl + "/captcha?type=login", // 登录模块验证码接口
       imageUrl: "", //头像路径
       registerSendsms: `${process.env.VUE_APP_baseUrl}/captcha?type=sendsms`, //注册模块 图形码
       regIconUrl: "", //响应回来的头像参数
@@ -290,17 +292,22 @@ export default {
             // window.console.log(this.form.phone)
             window.console.log(this.form.captcha);
 
-            axios({
-              url: process.env.VUE_APP_baseUrl + "/login",
-              method: "post",
-              // 因为基地址和 当前路径不同源, 但是后台已经处理了跨域的问题, 但是cook令牌带不过去, 所以要加上这句代码
-              withCredentials: true,
+            // axios({
+            //   url: process.env.VUE_APP_baseUrl + "/login",
+            //   method: "post",
+            //   // 因为基地址和 当前路径不同源, 但是后台已经处理了跨域的问题, 但是cook令牌带不过去, 所以要加上这句代码
+            //   withCredentials: true,
 
-              data: {
-                phone: this.form.phone,
-                password: this.form.password,
-                code: this.form.captcha
-              }
+            //   data: {
+            //     phone: this.form.phone,
+            //     password: this.form.password,
+            //     code: this.form.captcha
+            //   }
+            // })
+            loginFrom({
+              phone: this.form.phone,
+              password: this.form.password,
+              code: this.form.captcha
             }).then(res => {
               //成功回调
               window.console.log(res);
@@ -353,18 +360,22 @@ export default {
       let reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
       if (reg.test(this.regForm.phone)) {
         // 成功之后在发请求 -- 请求验证码
-        axios({
-          url: process.env.VUE_APP_baseUrl + "/sendsms",
-          method: "post",
-          withCredentials: true,
-          data: {
-            code: this.regForm.handover,
-            phone: this.regForm.phone
-          }
+        // axios({
+        //   url: process.env.VUE_APP_baseUrl + "/sendsms",
+        //   method: "post",
+        //   withCredentials: true,
+        //   data: {
+        //     code: this.regForm.handover,
+        //     phone: this.regForm.phone
+        //   }
+        // })
+        note({
+          code: this.regForm.handover,
+          phone: this.regForm.phone
         }).then(res => {
           //成功回调
           window.console.log(res);
-           this.handoverRegPic()
+          this.handoverRegPic();
           if (res.data.code == 200) {
             // 触发随机图形码
             this.$message.success("验证码为:" + res.data.data.captcha);
@@ -376,7 +387,7 @@ export default {
                 clearInterval(time);
               }
             }, 100);
-          } else if(res.data.code == 0){
+          } else if (res.data.code == 0) {
             this.$message.error(res.data.message);
           }
         });
@@ -393,20 +404,28 @@ export default {
           window.console.log(this.regForm.captcha);
           window.console.log(this.regIconUrl);
 
-          axios({
-            url: process.env.VUE_APP_baseUrl + "/register",
-            method: "post",
-            // 因为基地址和 当前路径不同源, 但是后台已经处理了跨域的问题, 但是cook令牌带不过去, 所以要加上这句代码
-            withCredentials: true,
+          // axios({
+          //   url: process.env.VUE_APP_baseUrl + "/register",
+          //   method: "post",
+          //   // 因为基地址和 当前路径不同源, 但是后台已经处理了跨域的问题, 但是cook令牌带不过去, 所以要加上这句代码
+          //   withCredentials: true,
 
-            data: {
-              username: this.regForm.name,
-              phone: this.regForm.phone,
-              email: this.regForm.email,
-              avatar: this.regIconUrl,
-              password: this.regForm.password,
-              code: this.regForm.captcha
-            }
+          //   data: {
+          //     username: this.regForm.name,
+          //     phone: this.regForm.phone,
+          //     email: this.regForm.email,
+          //     avatar: this.regIconUrl,
+          //     password: this.regForm.password,
+          //     code: this.regForm.captcha
+          //   }
+          // })
+          registerFrom({
+            username: this.regForm.name,
+            phone: this.regForm.phone,
+            email: this.regForm.email,
+            avatar: this.regIconUrl,
+            password: this.regForm.password,
+            code: this.regForm.captcha
           }).then(res => {
             //成功回调
             window.console.log(res);
@@ -418,7 +437,7 @@ export default {
             this.regForm.password = "";
             this.regForm.captcha = "";
             this.dialogFormVisible = false;
-            this.$message.success('注册成功')
+            this.$message.success("注册成功");
           });
         } else {
           this.$message.error("输入的内容有误或者不全");
