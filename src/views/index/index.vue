@@ -17,7 +17,7 @@
     <el-container>
       <!-- 左边导航栏 -->
       <el-aside width="auto">
-        <el-menu default-active="1" class="el-menu-vertical-demo" :collapse="isCollapse" router>
+        <el-menu :default-active="$route.path" class="el-menu-vertical-demo" :collapse="isCollapse" router>
           <!-- 数据概览 -->
           <el-menu-item index="/index/chart">
             <i class="el-icon-pie-chart"></i>
@@ -54,12 +54,15 @@
 </template>
 
 <script>
+// 导入路由
+// import router from '../../router/router.js'
+
 export default {
   data() {
     return {
       isCollapse: false
     };
-  }
+  },
 };
 </script>
 
