@@ -27,6 +27,16 @@ import enterprise from '../views/index/enterprise/enterprise.vue'
 // 导入学科列表 - subject
 import subject from '../views/index/subject/subject.vue'
 
+// 导入API抽取层 - index
+import {userInfo} from '../API/index.js' 
+
+// 导入token抽取层 - /utils/token
+import {getToken,removerToken} from '../utils/token.js'
+
+// 按需导入 element - ui ---弹窗事件
+import {Message} from 'element-ui'
+
+
 // 实例化
 const router = new VueRouter({
     //这里就是路由的配制项
@@ -62,6 +72,37 @@ const router = new VueRouter({
             ]
         },
     ]
+})
+// 设置白名单
+const whitePaths = ['/login']
+
+// 设置导航守卫
+router.beforeEach((to,from,next)=>{
+    // window.console.log(to)      //要去的路径
+    // window.console.log(from)    //来时的路径
+    // window.console.log(next)    //下一个
+    if(whitePaths.includes(to.path.toLocaleLowerCase)) {          //查看是否在白名单内,顺便转换大小写
+        next()
+    }else {
+        // window.console.log(getToken())
+        if(getToken()) {        //如果有token的话 就发送请求
+            userInfo().then(res=>{  
+                // window.console.log(res)
+                if(res.data.code === 200) {             //如果token参数正确 就登录成功
+                    Message.success('登录成功')
+                    next()
+                }else if(res.data.code === 206) {
+                    window.console.log(res)
+                    Message.warning(res.data.message)
+                    next('/login')
+                    removerToken()  //删除token
+                }
+            })
+        }else {
+            next('/login');
+            Message.error('请登录')
+        }
+    }
 })
 
 export default router

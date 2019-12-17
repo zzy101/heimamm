@@ -138,6 +138,9 @@
 // 导入login的抽取API层
 import { loginFrom, note, registerFrom } from "../../API/login.js";
 
+// 导入token的抽取层 - utils/token.js
+import { setToken } from '../../utils/token.js'
+
 export default {
   data() {
     // 手机号判断
@@ -290,7 +293,7 @@ export default {
           // 登录成功
           if (valid) {
             // window.console.log(this.form.phone)
-            window.console.log(this.form.captcha);
+            // window.console.log(this.form.captcha);
 
             // axios({
             //   url: process.env.VUE_APP_baseUrl + "/login",
@@ -309,8 +312,13 @@ export default {
               password: this.form.password,
               code: this.form.captcha
             }).then(res => {
+              this.handoverRegPic()
               //成功回调
-              window.console.log(res);
+              // window.console.log(res);
+              // 把token 缓存到本地
+              // localStorage.setItem('token',res.data.data.token)
+              setToken(res.data.data.token)
+              this.$router.push('/index')   //跳转到首页
             });
           } else {
             this.$message.error("输入的内容有误或者不全");

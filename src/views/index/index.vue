@@ -17,7 +17,12 @@
     <el-container>
       <!-- 左边导航栏 -->
       <el-aside width="auto">
-        <el-menu :default-active="$route.path" class="el-menu-vertical-demo" :collapse="isCollapse" router>
+        <el-menu
+          :default-active="$route.path"
+          class="el-menu-vertical-demo"
+          :collapse="isCollapse"
+          router
+        >
           <!-- 数据概览 -->
           <el-menu-item index="/index/chart">
             <i class="el-icon-pie-chart"></i>
@@ -54,6 +59,11 @@
 </template>
 
 <script>
+// 导入token的抽取层
+// import { getToken } from "../../utils/token";
+
+// 导入首页的API抽取层
+// import {userInfo} from '../../API/index.js'
 // 导入路由
 // import router from '../../router/router.js'
 
@@ -62,6 +72,22 @@ export default {
     return {
       isCollapse: false
     };
+  },
+  beforeCreate() {
+    // 检查是否存在token
+    // if(!localStorage.getItem('token')){
+    //   this.$router.push('/login')
+    //   this.$message.error('没有权限')
+    // }
+    // if (getToken()) {
+    //   this.$router.push("/login");
+    //   this.$message.error("没有权限");      //设置导航守卫
+    // }
+  },
+  created() {
+    // userInfo().then(res=>{
+    //   window.console.log(res)
+    // })
   },
 };
 </script>
