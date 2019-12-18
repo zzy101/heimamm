@@ -1,13 +1,84 @@
 <template>
-  <div>用户列表</div>
+  <div class="user">
+    <el-card class="box-card user-from">
+      <el-form :inline="true" :model="formInline" class="demo-form-inline">
+        <!-- 用户名称 -->
+        <el-form-item class="width100" label="用户名称">
+          <el-input v-model="formInline.number"></el-input>
+        </el-form-item>
+        <!-- 用户邮箱 -->
+        <el-form-item label="用户邮箱">
+          <el-input v-model="formInline.user"></el-input>
+        </el-form-item>
+        <!-- 状态框 -->
+        <el-form-item label="角色">
+          <el-select v-model="formInline.region" placeholder="请选择状态">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+        </el-form-item>
+        <!-- 搜索按钮 -->
+        <el-form-item>
+          <el-button type="primary">搜索</el-button>
+        </el-form-item>
+        <!-- 清除按钮 -->
+        <el-form-item>
+          <el-button>删除</el-button>
+        </el-form-item>
+        <!-- 新增按钮 -->
+        <el-form-item>
+          <el-button type="primary" class="el-icon-plus">新增学科</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+    <el-card class="box-card user-table">
+      <el-table :data="tableData" style="width: 100%" border >
+        <el-table-column prop="id" label="序号"></el-table-column>
+        <el-table-column prop="username" label="用户号"></el-table-column>
+        <el-table-column prop="phone" label="电话"></el-table-column>
+        <el-table-column prop="email" label="邮箱"></el-table-column>
+        <el-table-column prop="role" label="角色"></el-table-column>
+        <el-table-column prop="remark" label="备注"></el-table-column>
+        <el-table-column prop="status" label="状态"></el-table-column>
+        <el-table-column prop="create_time" label="操作"></el-table-column>
+      </el-table>
+    </el-card>
+  </div>
 </template>
 
 <script>
+import {userList} from '../../../API/user.js'
 export default {
-
-}
+  data() {
+    return {
+      // 表单数据
+      formInline: {
+        number: "", //学科编号
+        user: "" //学科名称
+      },
+      // 表格数据
+      tableData: []
+    };
+  },
+  methods: {},
+  created() {
+    userList().then(res=>{
+      for(let i = 0; i < res.data.data.items.length; i++){
+        this.tableData.push(res.data.data.items[i])
+      }
+      this.tableData.reverse()
+    })
+  }
+};
 </script>
 
-<style>
-
+<style lang="less">
+.user {
+  .user-from {
+    margin-bottom: 19px;
+    .width100 .el-form-item__content {
+      width: 100px;
+    }
+  }
+}
 </style>

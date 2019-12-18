@@ -56,6 +56,10 @@ const router = new VueRouter({
                     component: chart
                 },
                 {
+                    path: '',
+                    component: chart
+                },
+                {
                     path: 'user',
                     component: user
                 },
@@ -88,7 +92,7 @@ router.beforeEach((to, from, next) => {
     if (whitePaths.includes(to.path.toLocaleLowerCase())) {
         next()
     } else {
-        window.console.log('2',whitePaths.includes(to.path.toLocaleLowerCase()))
+        // window.console.log('2',whitePaths.includes(to.path.toLocaleLowerCase()))
         // window.console.log(getToken())
         if (getToken()) {        //如果有token的话 就发送请求
             userInfo().then(res => {
@@ -100,7 +104,7 @@ router.beforeEach((to, from, next) => {
                     store.state.userInfo.avatar = process.env.VUE_APP_baseUrl + '/' + store.state.userInfo.avatar
                 } else if (res.data.code === 206) {
                     // window.console.log(res)
-                    Message.warning('账号密码或验证码错误')
+                    Message.warning('登录失败')
                     next('/login')
                     removerToken()  //删除token
                 }

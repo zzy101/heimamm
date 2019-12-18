@@ -24,7 +24,7 @@
           router
         >
           <!-- 数据概览 -->
-          <el-menu-item index="/index/chart">
+          <el-menu-item index="/index">
             <i class="el-icon-pie-chart"></i>
             <span slot="title">数据概览</span>
           </el-menu-item>
@@ -109,6 +109,7 @@ export default {
     //   window.console.log(res)
     // })
     // window.console.log(this.$store.state.userInfo)   //查看接收 store 的值
+    // window.console.log(this.$route.path)
   }
 };
 </script>
@@ -166,5 +167,9 @@ export default {
     width: 200px;
     min-height: 400px;
   }
+}
+// 首页主体
+.el-main {
+  background-color:#E8E9EC;
 }
 </style>
