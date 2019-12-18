@@ -8,7 +8,7 @@ import router from './router/router.js'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
-
+import store from './store/store.js'
 
 
 //注册element-ui
@@ -23,6 +23,7 @@ import './style/base.css'
 Vue.config.productionTip = false
 
 new Vue({
-  router,
+  router,   //挂载路由
+  store,     //挂载Vuex
   render: h => h(App),
 }).$mount('#app')

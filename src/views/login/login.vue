@@ -312,12 +312,13 @@ export default {
               password: this.form.password,
               code: this.form.captcha
             }).then(res => {
-              this.handoverRegPic()
+              this.newCaptcha()
               //成功回调
               // window.console.log(res);
               // 把token 缓存到本地
               // localStorage.setItem('token',res.data.data.token)
               setToken(res.data.data.token)
+              this.$message.success('登录成功')
               this.$router.push('/index')   //跳转到首页
             });
           } else {

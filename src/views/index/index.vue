@@ -7,11 +7,11 @@
         <span>黑马面面</span>
       </div>
       <div class="header-right">
-        <img src="../../assets/login-log.png" alt />
+        <img :src="$store.state.userInfo.avatar" alt />
         <span class="username">
-          <i>李达</i>,你好
+          <i>{{$store.state.userInfo.username}}</i>,你好
         </span>
-        <el-button type="primary">退出</el-button>
+        <el-button @click="loginOut" type="primary">退出</el-button>
       </div>
     </el-header>
     <el-container>
@@ -61,6 +61,7 @@
 <script>
 // 导入token的抽取层
 // import { getToken } from "../../utils/token";
+import { removerToken } from "../../utils/token";
 
 // 导入首页的API抽取层
 // import {userInfo} from '../../API/index.js'
@@ -70,8 +71,27 @@
 export default {
   data() {
     return {
-      isCollapse: false
+      isCollapse: false //列表 滑入(滑出)
     };
+  },
+  methods: {
+    loginOut() {
+      this.$confirm("确定要退出?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "退出成功!",
+          });
+          this.$router.push('/login'); //退出回到登录页
+          removerToken(); //删除tooken
+        }).catch(()=>{
+          
+        })
+    }
   },
   beforeCreate() {
     // 检查是否存在token
@@ -88,7 +108,8 @@ export default {
     // userInfo().then(res=>{
     //   window.console.log(res)
     // })
-  },
+    // window.console.log(this.$store.state.userInfo)   //查看接收 store 的值
+  }
 };
 </script>
 
@@ -139,6 +160,7 @@ export default {
 }
 // 首页导航栏
 .el-aside {
+  text-align: center;
   // 首页左边
   .el-menu-vertical-demo:not(.el-menu--collapse) {
     width: 200px;
