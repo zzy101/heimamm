@@ -11,10 +11,11 @@ const user = axios.create({
 })
 
 // 获取用户列表
-export function userList() {
+export function userList(params) {
     return user({
         url : '/user/list',
         method : 'get',
+        params,
     })
 }
 

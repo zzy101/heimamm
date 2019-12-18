@@ -13,8 +13,8 @@
         <!-- 状态框 -->
         <el-form-item label="角色">
           <el-select v-model="formInline.region" placeholder="请选择状态">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+            <el-option label="0" value="user"></el-option>
+            <el-option label="1" value="VIP"></el-option>
           </el-select>
         </el-form-item>
         <!-- 搜索按钮 -->
@@ -33,7 +33,12 @@
     </el-card>
     <el-card class="box-card user-table">
       <!-- 表格数据主体 -->
-      <el-table :data="tableData" style="width: 100%" border>
+      <el-table
+        :data="tableData"
+        style="width: 100%"
+        border
+        :default-sort="{prop: 'id', order: 'descending'}"
+      >
         <el-table-column prop="id" label="序号"></el-table-column>
         <el-table-column prop="username" label="用户号"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
@@ -49,11 +54,11 @@
         hide-on-single-page
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currentPage4"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
+        :current-page="page"
+        :page-sizes="[1, 2, 3, 4]"
+        :page-size="limit"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="total"
       ></el-pagination>
     </el-card>
   </div>
@@ -71,24 +76,38 @@ export default {
       },
       // 表格数据
       tableData: [],
-      currentPage4: 1
+      // currentPage4: 1, //默认分页为1
+      total: 0, //总条数
+      limit: 3, //每页 有多少行
+      page: 1, //当前页码
+      reverse : false,
     };
   },
   methods: {
-    handleSizeChange(val) {
-      window.console.log(`每页 ${val} 条`);
+    getList() {
+      userList({
+        limit: this.limit,
+        page: this.page
+      }).then(res => {
+        // window.console.log(res);
+        this.tableData = (res.data.data.items).reverse();
+        // this.tableData.reverse(); //反转数组
+        window.console.log(this.tableData)
+        this.total = res.data.data.pagination.total; //总页数
+      });
     },
-    handleCurrentChange(val) {
-      window.console.log(`当前页: ${val}`);
+    handleSizeChange(limit) {
+      this.limit = limit; //每页 有多少行
+      this.page = 1; //当前页面
+      this.getList();
+    },
+    handleCurrentChange(page) {
+      this.page = page;
+      this.getList();
     }
   },
   created() {
-    userList().then(res => {
-      for (let i = 0; i < res.data.data.items.length; i++) {
-        this.tableData.push(res.data.data.items[i]);
-      }
-      this.tableData.reverse();
-    });
+    this.getList();
   }
 };
 </script>
