@@ -32,7 +32,8 @@
       </el-form>
     </el-card>
     <el-card class="box-card user-table">
-      <el-table :data="tableData" style="width: 100%" border >
+      <!-- 表格数据主体 -->
+      <el-table :data="tableData" style="width: 100%" border>
         <el-table-column prop="id" label="序号"></el-table-column>
         <el-table-column prop="username" label="用户号"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
@@ -42,12 +43,24 @@
         <el-table-column prop="status" label="状态"></el-table-column>
         <el-table-column prop="create_time" label="操作"></el-table-column>
       </el-table>
+      <!-- 分页 -->
+      <el-pagination
+        background
+        hide-on-single-page
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage4"
+        :page-sizes="[100, 200, 300, 400]"
+        :page-size="100"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="400"
+      ></el-pagination>
     </el-card>
   </div>
 </template>
 
 <script>
-import {userList} from '../../../API/user.js'
+import { userList } from "../../../API/user.js";
 export default {
   data() {
     return {
@@ -57,28 +70,42 @@ export default {
         user: "" //学科名称
       },
       // 表格数据
-      tableData: []
+      tableData: [],
+      currentPage4: 1
     };
   },
-  methods: {},
+  methods: {
+    handleSizeChange(val) {
+      window.console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      window.console.log(`当前页: ${val}`);
+    }
+  },
   created() {
-    userList().then(res=>{
-      for(let i = 0; i < res.data.data.items.length; i++){
-        this.tableData.push(res.data.data.items[i])
+    userList().then(res => {
+      for (let i = 0; i < res.data.data.items.length; i++) {
+        this.tableData.push(res.data.data.items[i]);
       }
-      this.tableData.reverse()
-    })
+      this.tableData.reverse();
+    });
   }
 };
 </script>
 
 <style lang="less">
 .user {
+  // 用户表单
   .user-from {
     margin-bottom: 19px;
     .width100 .el-form-item__content {
       width: 100px;
     }
+  }
+  // 分页
+  .el-pagination {
+    text-align: center;
+    margin-top: 31px;
   }
 }
 </style>
