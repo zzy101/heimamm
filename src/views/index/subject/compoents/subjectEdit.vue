@@ -48,21 +48,15 @@ export default {
       //   新增列表规则
       addRulse: {
         //   学科编号
-        rid : [
-            {required: true, message: '请输入学科编号', trigger: 'blur'}
-        ],
+        rid: [{ required: true, message: "请输入学科编号", trigger: "blur" }],
         // 学科名称
-        name : [
-            {required: true, message: '请输入学科名称', trigger: 'blur'}
-        ],
+        name: [{ required: true, message: "请输入学科名称", trigger: "blur" }],
         // 学科简称
-        short_name : [
-            {required: true, message: '请输入学科简称', trigger: 'blur'}
+        short_name: [
+          { required: true, message: "请输入学科简称", trigger: "blur" }
         ],
         // 学科简介
-        intro : [
-            {required: true, message: '请输入学科简介', trigger: 'blur'}
-        ],
+        intro: [{ required: true, message: "请输入学科简介", trigger: "blur" }]
       },
       formLabelWidth: "80px"
     };
@@ -77,7 +71,7 @@ export default {
               this.$message.success("新增成功");
               this.$parent.getList(); //重新刷新数据
               this.$parent.addFormVisible = false; //关闭对话框
-              this.addForm = {}
+              this.addForm = {};
             } else if (res.code === 201) {
               this.$message.warning("用户名已存在");
             }

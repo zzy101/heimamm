@@ -59,15 +59,15 @@
       </el-table>
     </el-card>
     <!-- 分页 -->
-    <!-- @size-change="handleSizeChange"
-    @current-change="handleCurrentChange"-->
     <el-pagination
       background
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
       :current-page="page"
       :page-sizes="page_sizes"
       :page-size="100"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="400"
+      :total="total"
     ></el-pagination>
     <!-- 新增学科 -->
     <subjectAdd></subjectAdd>
@@ -98,18 +98,23 @@ export default {
       // 新增框是否显示
       addFormVisible: false,
       // 页容量
-      page_sizes: [100, 200, 300, 400],
-      page: 1 //当前页
+      page_sizes: [2, 4, 6, 8],
+      page: 1, //当前页
+      limit: 2, //页容量
+      total: 0  //总条数
     };
   },
   methods: {
     // 获取列表信息
     getList() {
       subjectList({
+        page: this.page,
+        limit: this.limit,
         ...this.formInline
       }).then(res => {
         window.console.log(res);
         this.tableData = res.data.items;
+        this.total = res.data.pagination.total;
       });
     },
     // 清空事件
@@ -142,6 +147,14 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    handleSizeChange(value) {
+      this.limit = value;
+      this.getList();
+    },
+    handleCurrentChange(value) {
+      this.page = value;
+      this.getList();
     }
   },
   created() {
