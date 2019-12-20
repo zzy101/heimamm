@@ -75,7 +75,7 @@ export default {
           subjectAdd({ ...this.addForm }).then(res => {
             if (res.code === 200) {
               this.$message.success("新增成功");
-            //   this.$parent.getList(); //重新刷新数据
+              this.$parent.getList(); //重新刷新数据
               this.$parent.addFormVisible = false; //关闭对话框
             } else if (res.code === 201) {
               this.$message.warning("用户名已存在");
