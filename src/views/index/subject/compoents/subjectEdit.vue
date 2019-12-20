@@ -1,31 +1,31 @@
 <template>
   <!-- 新增用户 -->
-  <el-dialog class="subjectAdd" title="新增用户" :visible.sync="$parent.addFormVisible" center>
-    <el-form :model="addForm" ref="addFrom" :rules="addRulse">
+  <el-dialog class="subjectEdit" title="编辑用户" :visible.sync="$parent.editFormVisible" center>
+    <el-form :model="editForm" ref="editFrom" :rules="editRulse">
       <!-- 学科编号-->
       <el-form-item label="学科编号" :label-width="formLabelWidth" prop="rid">
-        <el-input v-model="addForm.rid" autocomplete="off"></el-input>
+        <el-input v-model="editForm.rid" autocomplete="off"></el-input>
       </el-form-item>
       <!-- 学科名称-->
       <el-form-item label="学科名称" :label-width="formLabelWidth" prop="name">
-        <el-input v-model="addForm.name" autocomplete="off"></el-input>
+        <el-input v-model="editForm.name" autocomplete="off"></el-input>
       </el-form-item>
       <!-- 学科简称-->
       <el-form-item label="学科简称" :label-width="formLabelWidth" prop="short_name">
-        <el-input v-model="addForm.short_name" autocomplete="off"></el-input>
+        <el-input v-model="editForm.short_name" autocomplete="off"></el-input>
       </el-form-item>
       <!-- 学科简介-->
       <el-form-item label="学科简介" :label-width="formLabelWidth" prop="intro">
-        <el-input v-model="addForm.intro" autocomplete="off"></el-input>
+        <el-input v-model="editForm.intro" autocomplete="off"></el-input>
       </el-form-item>
       <!-- 学科备注-->
       <el-form-item label="学科备注" :label-width="formLabelWidth" prop="rema">
-        <el-input v-model="addForm.rema" autocomplete="off"></el-input>
+        <el-input v-model="editForm.rema" autocomplete="off"></el-input>
       </el-form-item>
     </el-form>
     <!-- 确认按钮 -->
     <div slot="footer" class="dialog-footer">
-      <el-button @click="$parent.addFormVisible = false">取 消</el-button>
+      <el-button @click="$parent.editFormVisible = false">取 消</el-button>
       <el-button type="primary" @click="submitForm">确 定</el-button>
     </div>
   </el-dialog>
@@ -33,12 +33,12 @@
 
 <script>
 // 导入user 抽取层
-import { subjectAdd } from "../../../../API/subject";
+import { subjectEdit } from "../../../../API/subject";
 export default {
   data() {
     return {
       // 新增列表
-      addForm: {
+      editForm: {
         rid: "", //学科编号
         name: "", //学科名称
         short_name: "", //学科简称
@@ -46,7 +46,7 @@ export default {
         rema: "" //学科备注
       },
       //   新增列表规则
-      addRulse: {
+      editRulse: {
         //   学科编号
         rid: [{ required: true, message: "请输入学科编号", trigger: "blur" }],
         // 学科名称
@@ -64,18 +64,18 @@ export default {
   methods: {
     //   提交表单验证
     submitForm() {
-      this.$refs.addFrom.validate(valid => {
+      this.$refs.editFrom.validate(valid => {
         if (valid) {
-          subjectAdd({ ...this.addForm }).then(res => {
+          subjectEdit({ ...this.editForm }).then(res => {
             if (res.code === 200) {
               this.$message.success("新增成功");
               this.$parent.getList(); //重新刷新数据
-              this.$parent.addFormVisible = false; //关闭对话框
-              this.addForm = {};
+              this.$parent.editFormVisible = false; //关闭对话框
+              this.editForm = {};
             } else if (res.code === 201) {
               this.$message.warning("用户名已存在");
             }
-            // $parent.addFormVisible = false;
+            // $parent.editFormVisible = false;
           });
         } else {
           this.$message.warning("新增失败!!!");
@@ -88,7 +88,7 @@ export default {
 </script>
 
 <style lang="less">
-.subjectAdd {
+.subjectEdit {
   .el-dialog {
     width: 603px;
     .el-dialog__header {

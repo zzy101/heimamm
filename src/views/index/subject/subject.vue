@@ -51,7 +51,7 @@
         </el-table-column>
         <el-table-column prop="operation" label="操作">
           <template slot-scope="scope">
-            <el-button type="text">编辑</el-button>
+            <el-button @click="subjectEdit(scope.row)" type="text">编辑</el-button>
             <el-button @click="handover(scope.row)" type="text">{{scope.row.status == 1?'禁用':'启用'}}</el-button>
             <el-button @click="remove(scope.row)" type="text">删除</el-button>
           </template>
@@ -71,6 +71,8 @@
     ></el-pagination>
     <!-- 新增学科 -->
     <subjectAdd></subjectAdd>
+    <!-- 编辑学科 -->
+    <subjectEdit ref="editData"></subjectEdit>
   </div>
 </template>
 
@@ -79,10 +81,13 @@
 import { subjectList, subjectRemove } from "../../../API/subject.js";
 
 // 导入新增组件
-import subjectAdd from "./compoents/subjectAdd";
+import subjectAdd from "./compoents/subjectAdd.vue";
+import subjectEdit from '../subject/compoents/subjectEdit.vue'
+
 export default {
   components: {
-    subjectAdd
+    subjectAdd,
+    subjectEdit
   },
   data() {
     return {
@@ -97,11 +102,13 @@ export default {
       tableData: [],
       // 新增框是否显示
       addFormVisible: false,
+      // 编辑框是否显示
+      editFormVisible: false,
       // 页容量
       page_sizes: [2, 4, 6, 8],
       page: 1, //当前页
       limit: 2, //页容量
-      total: 0  //总条数
+      total: 0 //总条数
     };
   },
   methods: {
@@ -148,10 +155,16 @@ export default {
         })
         .catch(() => {});
     },
+    subjectEdit(items) {
+      this.editFormVisible = true;
+        this.$refs.editData.editForm = JSON.parse(JSON.stringify(items))  //深拷贝
+      },
+    // 分页 页容量 -- 页容量发生变化的时候就会调用
     handleSizeChange(value) {
       this.limit = value;
       this.getList();
     },
+    // 分页 - 页码 -- 页码发生变化的时候就会调用
     handleCurrentChange(value) {
       this.page = value;
       this.getList();
