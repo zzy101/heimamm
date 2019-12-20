@@ -3,13 +3,13 @@ import axios from 'axios';
 // 导入token
 import { getToken } from './token.js'
 
-const user = axios.create({
+const instanace = axios.create({
     baseURL: process.env.VUE_APP_baseUrl,
     withCredentials: true,
 })
 
 // 添加请求拦截器
-user.interceptors.request.use(function (config) {
+instanace.interceptors.request.use(function (config) {
     // 在发送请求之前做些什
     // window.console.log(config)
     // 添加请求头
@@ -21,7 +21,7 @@ user.interceptors.request.use(function (config) {
 });
 
 // 添加响应拦截器
-user.interceptors.response.use(function (response) {
+instanace.interceptors.response.use(function (response) {
     // 对响应数据做点什么
     return response.data
 }, function (error) {
@@ -29,4 +29,4 @@ user.interceptors.response.use(function (response) {
     return Promise.reject(error)
 });
 
-export default user;
+export default instanace;
