@@ -52,8 +52,8 @@
         <el-table-column prop="operation" label="操作">
           <template slot-scope="scope">
             <el-button type="text">编辑</el-button>
-            <el-button type="text">{{scope.row.status == 1?'禁用':'启用'}}</el-button>
-            <el-button type="text">删除</el-button>
+            <el-button @click="handover(scope.row)" type="text">{{scope.row.status == 1?'禁用':'启用'}}</el-button>
+            <el-button @click="remove(scope.row)" type="text">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -76,7 +76,7 @@
 
 <script>
 // 导入 API 接收 抽取层
-import { subjectList } from "../../../API/subject.js";
+import { subjectList, subjectRemove } from "../../../API/subject.js";
 
 // 导入新增组件
 import subjectAdd from "./compoents/subjectAdd";
@@ -116,6 +116,32 @@ export default {
     clear() {
       this.formInline = {};
       this.getList();
+    },
+    // 切换状态
+    handover(items) {
+      if (items.status == 1) {
+        items.status = 0;
+      } else {
+        items.status = 1;
+      }
+    },
+    // 删除数据
+    remove(items) {
+      // window.console.log(items)
+      this.$confirm("确定要删除吗", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          subjectRemove({
+            id: items.id
+          }).then(res => {
+            window.console.log(res);
+            this.getList();
+          });
+        })
+        .catch(() => {});
     }
   },
   created() {
