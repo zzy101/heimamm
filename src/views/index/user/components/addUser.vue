@@ -45,7 +45,13 @@
 <script>
 // 导入user 抽取层
 import { useradd } from "../../../../API/user.js";
+
+// 导入 验证手机 - 邮箱 规则的抽取层
+import { checkEmail, checkPhone } from "../../../../utils/validator.js";
+
 export default {
+  checkEmail, //验证邮箱
+  checkPhone, //验证手机号
   data() {
     //   验证邮箱
     let checkEmail = (rule, value, callback) => {
@@ -110,17 +116,17 @@ export default {
       this.$refs.addFrom.validate(valid => {
         if (valid) {
           useradd({ ...this.addForm }).then(res => {
-              if(res.code === 200) {
-                  this.$message.success('新增成功')
-                  this.$parent.getList()            //重新刷新数据
-                  this.$parent.addFormVisible = false        //关闭对话框
-              }else if(res.code === 201) {
-                  this.$message.warning('用户名已存在')
-              }
+            if (res.code === 200) {
+              this.$message.success("新增成功");
+              this.$parent.getList(); //重新刷新数据
+              this.$parent.addFormVisible = false; //关闭对话框
+            } else if (res.code === 201) {
+              this.$message.warning("用户名已存在");
+            }
             // $parent.addFormVisible = false;
           });
         } else {
-            this.$message.warning('新增失败!!!')
+          this.$message.warning("新增失败!!!");
           return false;
         }
       });

@@ -89,7 +89,7 @@
 
 <script>
 // 导入 api 抽取层
-import { userList, userremove } from "../../../API/user.js";
+import { userList, userremove,userstatus } from "../../../API/user.js";
 
 // 导入 子组件 新增列表
 import addUser from "./components/addUser.vue"; // 新增组件
@@ -167,11 +167,13 @@ export default {
     },
     // 开启状态
     show_status(items) {
-      if (items.status === 1) {
-        items.status = 0;
-      } else {
-        items.status = 1;
-      }
+      userstatus({
+        id : items.id
+      }).then(res=>{
+        if(res.code === 200) {
+          this.getList()
+        }
+      })
       // this.getList()
     },
     // 点击每页显示

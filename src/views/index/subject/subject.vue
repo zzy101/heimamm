@@ -52,7 +52,7 @@
         <el-table-column prop="operation" label="操作">
           <template slot-scope="scope">
             <el-button @click="subjectEdit(scope.row)" type="text">编辑</el-button>
-            <el-button @click="handover(scope.row)" type="text">{{scope.row.status == 1?'禁用':'启用'}}</el-button>
+            <el-button @click="show_status(scope.row)" type="text">{{scope.row.status == 1?'禁用':'启用'}}</el-button>
             <el-button @click="remove(scope.row)" type="text">删除</el-button>
           </template>
         </el-table-column>
@@ -78,7 +78,7 @@
 
 <script>
 // 导入 API 接收 抽取层
-import { subjectList, subjectRemove } from "../../../API/subject.js";
+import { subjectList, subjectRemove,subjectStatus } from "../../../API/subject.js";
 
 // 导入新增组件
 import subjectAdd from "./compoents/subjectAdd.vue";
@@ -130,12 +130,15 @@ export default {
       this.getList();
     },
     // 切换状态
-    handover(items) {
-      if (items.status == 1) {
-        items.status = 0;
-      } else {
-        items.status = 1;
-      }
+    // 开启状态
+    show_status(items) {
+      subjectStatus({
+        id : items.id
+      }).then(res=>{
+        if(res.code === 200) {
+          this.getList()
+        }
+      })
     },
     // 删除数据
     remove(items) {

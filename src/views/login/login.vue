@@ -139,36 +139,17 @@
 import { loginFrom, note, registerFrom } from "../../API/login.js";
 
 // 导入token的抽取层 - utils/token.js
-import { setToken } from '../../utils/token.js'
+import { setToken } from "../../utils/token.js";
+
+// 导入 手机 - 邮箱验证的抽取层
+import { checkPhone, checkEmail } from "../../utils/validator.js";
 
 export default {
+  // 手机号判断
+  checkPhone,
+  // 邮箱判断
+  checkEmail,
   data() {
-    // 手机号判断
-    var checkedPhone = (rule, value, callback) => {
-      if (value == "") {
-        return callback(new Error("手机号不能为空"));
-      } else {
-        const reg = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
-        if (reg.test(value) == false) {
-          callback(new Error("手机格式错误"));
-        } else {
-          callback();
-        }
-      }
-    };
-    // 邮箱判断
-    let checkedEmail = (rule, value, callback) => {
-      if (value == "") {
-        return callback(new Error("邮箱不能为空"));
-      } else {
-        const reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
-        if (reg.test(value) == false) {
-          callback(new Error("邮箱格式错误"));
-        } else {
-          callback();
-        }
-      }
-    };
     return {
       // 登录表单数据
       form: {
@@ -189,7 +170,7 @@ export default {
       // 登录表单规则
       rules: {
         // 手机号
-        phone: [{ required: true, validator: checkedPhone, trigger: "blur" }],
+        phone: [{ required: true, validator: checkPhone, trigger: "blur" }],
         // 密码
         password: [
           {
@@ -236,9 +217,9 @@ export default {
           }
         ],
         // 邮箱
-        email: [{ required: true, validator: checkedEmail, trigger: "blur" }],
+        email: [{ required: true, validator: checkEmail, trigger: "blur" }],
         // 手机号
-        phone: [{ required: true, validator: checkedPhone, trigger: "blur" }],
+        phone: [{ required: true, validator: checkPhone, trigger: "blur" }],
         // 密码
         password: [
           {
@@ -312,14 +293,14 @@ export default {
               password: this.form.password,
               code: this.form.captcha
             }).then(res => {
-              this.newCaptcha()
+              this.newCaptcha();
               //成功回调
               // window.console.log(res);
               // 把token 缓存到本地
               // localStorage.setItem('token',res.data.data.token)
-              setToken(res.data.data.token)
-              this.$message.success('登录成功')
-              this.$router.push('/index')   //跳转到首页
+              setToken(res.data.data.token);
+              this.$message.success("登录成功");
+              this.$router.push("/index"); //跳转到首页
             });
           } else {
             this.$message.error("输入的内容有误或者不全");
