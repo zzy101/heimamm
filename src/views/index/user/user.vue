@@ -5,7 +5,7 @@
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <!-- 用户名称 -->
         <el-form-item class="width100" label="用户名称">
-          <el-input v-model="formInline.user_name"></el-input>
+          <el-input v-model="formInline.username"></el-input>
         </el-form-item>
         <!-- 用户邮箱 -->
         <el-form-item label="用户邮箱">
@@ -44,9 +44,10 @@
         <el-table-column prop="email" label="邮箱"></el-table-column>
         <el-table-column prop="role_id" label="角色">
           <template slot-scope="scope">
-            <span v-if="scope.row.role_id == 2">管理员</span>
+            <span v-if="scope.row.role_id == 1">超级管理员</span>
+            <span v-else-if="scope.row.role_id == 2">管理员</span>
             <span v-else-if="scope.row.role_id == 3">老师</span>
-            <span v-else>学生</span>
+            <span v-else-if="scope.row.role_id == 4">学生</span>
           </template>
         </el-table-column>
         <el-table-column prop="remark" label="备注"></el-table-column>
@@ -59,12 +60,12 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button @click="editUser(scope.row)" type="text">编辑</el-button>
+            <el-button v-power="['老师','学生','管理员']" @click="editUser(scope.row)" type="text">编辑</el-button>
             <el-button
               type="text"
               @click="show_status(scope.row)"
             >{{scope.row.status == 1?'禁用':'启用'}}</el-button>
-            <el-button @click="removeUser(scope.row)" type="text">删除</el-button>
+            <el-button v-power="['老师','学生','管理员']" @click="removeUser(scope.row)" type="text">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -103,7 +104,7 @@ export default {
     return {
       // 表单数据
       formInline: {
-        user_name: "", //学科编号
+        username: "", //学科编号
         email: "",
         role_id: ""
       },

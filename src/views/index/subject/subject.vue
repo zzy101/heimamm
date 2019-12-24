@@ -42,7 +42,11 @@
         <el-table-column prop="name" label="学科名称"></el-table-column>
         <el-table-column prop="short_name" label="简称"></el-table-column>
         <el-table-column prop="username" label="创建者"></el-table-column>
-        <el-table-column prop="create_time" label="创建日期"></el-table-column>
+        <el-table-column prop="create_time" label="创建日期">
+          <template slot-scope="scope">
+              {{scope.row.create_time | filterMoment}}
+          </template>
+        </el-table-column>
         <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
             <span v-if="scope.row.status == 1">启用</span>
@@ -51,9 +55,9 @@
         </el-table-column>
         <el-table-column prop="operation" label="操作">
           <template slot-scope="scope">
-            <el-button @click="subjectEdit(scope.row)" type="text">编辑</el-button>
+            <el-button v-power="['学生']" @click="subjectEdit(scope.row)" type="text">编辑</el-button>
             <el-button @click="show_status(scope.row)" type="text">{{scope.row.status == 1?'禁用':'启用'}}</el-button>
-            <el-button @click="remove(scope.row)" type="text">删除</el-button>
+            <el-button v-power="['老师','学生','管理员']" @click="remove(scope.row)" type="text">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

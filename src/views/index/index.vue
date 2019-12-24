@@ -24,30 +24,32 @@
           router
         >
           <!-- 数据概览 -->
-          <el-menu-item index="/index">
-            <i class="el-icon-pie-chart"></i>
-            <span slot="title">数据概览</span>
+          <template v-for="(item, index) in children" >
+          <el-menu-item v-if="item.meta.power.includes(userInfo.role)" :index="item.meta.index" :key="index">
+            <i class="item.meta.icon"></i>
+            <span slot="title">{{item.meta.title}}</span>
           </el-menu-item>
+          </template>
           <!-- 用户列表 -->
-          <el-menu-item index="/index/user">
+          <!-- <el-menu-item v-if="['超级管理员','管理员'].includes(userInfo.role)" index="/index/user">
             <i class="el-icon-user"></i>
-            <span slot="title">用户列表</span>
-          </el-menu-item>
+            <span slot="title">用户列表</span>111
+          </el-menu-item>-->
           <!-- 题库列表 -->
-          <el-menu-item index="/index/question">
+          <!-- <el-menu-item v-if="['超级管理员','管理员','老师','学生'].includes(userInfo.role)" index="/index/question">
             <i class="el-icon-edit-outline"></i>
             <span slot="title">题库列表</span>
-          </el-menu-item>
+          </el-menu-item>-->
           <!-- 企业列表 -->
-          <el-menu-item index="/index/enterprise">
+          <!-- <el-menu-item v-if="['超级管理员','管理员','老师'].includes(userInfo.role)" index="/index/enterprise">
             <i class="el-icon-office-building"></i>
             <span slot="title">企业列表</span>
-          </el-menu-item>
+          </el-menu-item>-->
           <!-- 学科列表 -->
-          <el-menu-item index="/index/subject">
+          <!-- <el-menu-item v-if="['超级管理员','管理员','老师','学生'].includes(userInfo.role)" index="/index/subject">
             <i class="el-icon-notebook-2"></i>
             <span slot="title">学科列表</span>
-          </el-menu-item>
+          </el-menu-item>-->
         </el-menu>
       </el-aside>
       <!-- 右边主体 -->
@@ -59,6 +61,8 @@
 </template>
 
 <script>
+// 导入 childre 的 路由源信息
+import children from "../../router/children.js";
 // 导入token的抽取层
 // import { getToken } from "../../utils/token";
 import { removerToken } from "../../utils/token";
@@ -71,10 +75,13 @@ import { removerToken } from "../../utils/token";
 export default {
   data() {
     return {
-      isCollapse: false //列表 滑入(滑出)
+      isCollapse: false, //列表 滑入(滑出)
+      children,
     };
   },
+
   methods: {
+    // 退出登录
     loginOut() {
       this.$confirm("确定要退出?", "提示", {
         confirmButtonText: "确定",
@@ -84,13 +91,12 @@ export default {
         .then(() => {
           this.$message({
             type: "success",
-            message: "退出成功!",
+            message: "退出成功!"
           });
-          this.$router.push('/login'); //退出回到登录页
+          this.$router.push("/login"); //退出回到登录页
           removerToken(); //删除tooken
-        }).catch(()=>{
-          
         })
+        .catch(() => {});
     }
   },
   beforeCreate() {
@@ -108,8 +114,15 @@ export default {
     // userInfo().then(res=>{
     //   window.console.log(res)
     // })
-    // window.console.log(this.$store.state.userInfo)   //查看接收 store 的值
+    // window.console.log(this.store.state.userInfo)   //查看接收 store 的值
     // window.console.log(this.$route.path)
+    // window.console.log(this.userInfo);
+    // window.console.log(this.$route.meta.power);
+  },
+  computed: {
+    userInfo() {
+      return this.$store.state.userInfo;
+    }
   }
 };
 </script>
@@ -170,6 +183,6 @@ export default {
 }
 // 首页主体
 .el-main {
-  background-color:#E8E9EC;
+  background-color: #e8e9ec;
 }
 </style>

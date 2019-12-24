@@ -1,6 +1,6 @@
 <template>
   <div class="question-add">
-    <el-dialog title="收货地址" :visible.sync="$parent.addFormVisible" center>
+    <el-dialog title="收货地址" :visible.sync="$parent.addFormVisible" fullscreen center @opened="opened">
       <el-form :model="form">
         <el-form-item label="学科" :label-width="formLabelWidth">
           <el-select v-model="form.region" placeholder="请选择活动学科">
@@ -38,7 +38,8 @@
         </el-form-item>
         <el-divider></el-divider>
         <el-form-item label="试题标题" :label-width="formLabelWidth"></el-form-item>
-        <div id="Editor"></div>
+        <div class="editor-title"></div>
+        <div class="editor-conter"></div>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="$parent.addFormVisible = false">取 消</el-button>
@@ -49,7 +50,7 @@
 </template>
 
 <script>
-// import wangEditor from 'wangEditor'
+import wangeditor from "wangeditor";
 
 export default {
   components: {},
@@ -70,11 +71,11 @@ export default {
     };
   },
   methods: {
-    // opened() {
-    //   var E = window.wangEditor;
-    //   var editor2 = new E("#Editor");
-    //   editor2.create();
-    // }
+    // 打开 对话框的回调函数
+    opened() {
+      const editor = new wangeditor(".editor-title", ".editor-conter");
+      editor.create();
+    }
   },
   mounted() {}
 };
@@ -82,23 +83,24 @@ export default {
 
 <style lang='less'>
 .question-add {
-  .el-dialog__wrapper {
-    .el-dialog {
-      width: 1430px;
-      // 头部标题颜色
-      .el-dialog__header {
-        background: linear-gradient(to right, #02c5fa, #1394fa);
-      }
-      .el-form {
-        padding-left: 300px;
-        //   文字靠左
-        .el-form-item__label {
-          text-align: left;
-        }
-        .el-divider--horizontal {
-          width: 830px;
-        }
-      }
+  .el-dialog {
+    // 头部标题颜色
+    .el-dialog__header {
+      background: linear-gradient(to right, #02c5fa, #1394fa);
+    }
+    // 内盒子居中
+    .el-dialog__body {
+      width: 60%;
+      margin: 0 auto;
+    }
+    // 富文本样式
+    .editor-title,
+    .editor-conter{
+      border: 1px solid #000;
+    }
+    .editor-conter {
+      border-top: none;
+      height: 100px;
     }
   }
 }

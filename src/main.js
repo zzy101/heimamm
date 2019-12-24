@@ -11,6 +11,12 @@ import 'element-ui/lib/theme-chalk/index.css';
 // 导入仓库
 import store from './store/store.js'
 
+// 导入过滤器
+import './filters/filters.js'
+
+// 导入自定义指令
+import './directives/directive.js'
+
 
 //注册element-ui
 Vue.use(ElementUI);

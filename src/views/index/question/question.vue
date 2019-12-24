@@ -139,5 +139,11 @@ export default {
       width: 388px;
     }
   }
+  // 表格样式
+  .el-card__body {
+    .el-table .is-leaf {
+      padding: 20px;
+    }
+  }
 }
 </style>

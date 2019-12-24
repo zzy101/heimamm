@@ -12,20 +12,8 @@ import login from '../views/login/login.vue'
 // 导入首页页面 - index
 import index from '../views/index/index.vue'
 
-// 导入数据概览 - chart
-import chart from '../views/index/chart/chart.vue'
-
-// 导入用户列表 - user
-import user from '../views/index/user/user.vue'
-
-// 导入题库列表 - question
-import question from '../views/index/question/question.vue'
-
-// 导入企业列表 - enterprise
-import enterprise from '../views/index/enterprise/enterprise.vue'
-
-// 导入学科列表 - subject
-import subject from '../views/index/subject/subject.vue'
+// 导入 路由嵌套
+import children from './children'
 
 // 导入API抽取层 - index
 import { userInfo } from '../API/index.js'
@@ -50,32 +38,10 @@ const router = new VueRouter({
         {
             path: '/index',
             component: index,  //这里要填入一个组件名(填入import的名字)，也就是上面地址对应的组件
-            children: [
-                {
-                    path: 'chart',
-                    component: chart
-                },
-                {
-                    path: '',
-                    component: chart
-                },
-                {
-                    path: 'user',
-                    component: user
-                },
-                {
-                    path: 'question',
-                    component: question
-                },
-                {
-                    path: 'enterprise',
-                    component: enterprise
-                },
-                {
-                    path: 'subject',
-                    component: subject
-                },
-            ]
+            meta: {
+                power: ['超级管理员','管理员', '老师', '学生'],
+            },
+            children, 
         },
     ]
 })
@@ -92,11 +58,20 @@ router.beforeEach((to, from, next) => {
     if (whitePaths.includes(to.path.toLocaleLowerCase())) {
         next()
     } else {
-        // window.console.log('2',whitePaths.includes(to.path.toLocaleLowerCase()))
-        // window.console.log(getToken())
         if (getToken()) {        //如果有token的话 就发送请求
             userInfo().then(res => {
-                // window.console.log(res)
+                // 通过 判断用户的状态 是否 被封号
+                // window.console.log(to)
+                if(res.data.data.status == 0) {
+                    Message.warning('你已被封号!')
+                    next('/login')
+                    return;
+                }else if (!(to.meta.power.includes(res.data.data.role))) {
+                    // window.console.log(res)
+                    Message.warning('你没有该权限访问!')
+                    next(from)      //跳转到 来时的页面
+                    return
+                }
                 if (res.data.code === 200) {             //如果token参数正确 就登录成功
                     // window.console.log(res)
                     next()
