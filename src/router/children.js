@@ -48,7 +48,7 @@ export default [
         path: 'enterprise',
         component: enterprise,
         meta: {
-            power: ['管理员', '老师'],
+            power: ['超级管理员','管理员', '老师'],
             icon: 'el-icon-office-building',
             index: '/index/enterprise',
             title: '企业列表'
@@ -58,7 +58,7 @@ export default [
         path: 'subject',
         component: subject,
         meta: {
-            power: ['管理员', '老师', '学生'],
+            power: ['超级管理员','管理员', '老师', '学生'],
             icon: 'el-icon-notebook-2',
             index: '/index/subject',
             title: '学科列表'

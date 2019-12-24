@@ -1,7 +1,7 @@
 <template>
   <div class="question-add">
     <el-dialog
-      title="收货地址"
+      title="题库列表"
       :visible.sync="$parent.addFormVisible"
       fullscreen
       center
@@ -63,27 +63,25 @@ export default {
   data() {
     return {
       form: {
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: "",
-        radio: "1"
+        title: ""
       },
       formLabelWidth: "80px",
-      editorOpen: true,
+      editor: undefined,
+      a:''
     };
   },
   methods: {
     // 打开 对话框的回调函数
     opened() {
-      if (this.editorOpen) {
-        const editor = new wangeditor(".editor-title", ".editor-conter");
-        editor.create();
-        this.editorOpen = false
+      if (this.editor == undefined) {
+        this.editor = new wangeditor(".editor-title", ".editor-conter");
+        // 获取富文本框的内容
+        this.editor.customConfig.onchange = html => {
+          // html 即变化之后的内容
+          // window.console.log(html);
+          this.form.title = html;
+        };
+        this.editor.create();
       }
     }
   },
