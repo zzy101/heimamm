@@ -1,6 +1,12 @@
 <template>
   <div class="question-add">
-    <el-dialog title="收货地址" :visible.sync="$parent.addFormVisible" fullscreen center @opened="opened">
+    <el-dialog
+      title="收货地址"
+      :visible.sync="$parent.addFormVisible"
+      fullscreen
+      center
+      @opened="opened"
+    >
       <el-form :model="form">
         <el-form-item label="学科" :label-width="formLabelWidth">
           <el-select v-model="form.region" placeholder="请选择活动学科">
@@ -67,14 +73,18 @@ export default {
         desc: "",
         radio: "1"
       },
-      formLabelWidth: "80px"
+      formLabelWidth: "80px",
+      editorOpen: true,
     };
   },
   methods: {
     // 打开 对话框的回调函数
     opened() {
-      const editor = new wangeditor(".editor-title", ".editor-conter");
-      editor.create();
+      if (this.editorOpen) {
+        const editor = new wangeditor(".editor-title", ".editor-conter");
+        editor.create();
+        this.editorOpen = false
+      }
     }
   },
   mounted() {}
@@ -92,10 +102,18 @@ export default {
     .el-dialog__body {
       width: 60%;
       margin: 0 auto;
+      // 下拉框 文字 靠左
+      .el-form-item__label {
+        text-align: left;
+      }
+      // 下拉框样式
+      .el-select {
+        width: 365px;
+      }
     }
     // 富文本样式
     .editor-title,
-    .editor-conter{
+    .editor-conter {
       border: 1px solid #000;
     }
     .editor-conter {
