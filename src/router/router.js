@@ -67,7 +67,7 @@ router.beforeEach((to, from, next) => {
                     next('/login')
                     return;
                 }else if (!(to.meta.power.includes(res.data.data.role))) {
-                    // window.console.log(res)
+                    window.console.log(res)
                     Message.warning('你没有该权限访问!')
                     next(from)      //跳转到 来时的页面
                     return

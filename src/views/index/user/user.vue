@@ -60,12 +60,12 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button v-power="['老师','学生','管理员']" @click="editUser(scope.row)" type="text">编辑</el-button>
+            <el-button v-power="['老师','学生']" @click="editUser(scope.row)" type="text">编辑</el-button>
             <el-button
               type="text"
               @click="show_status(scope.row)"
             >{{scope.row.status == 1?'禁用':'启用'}}</el-button>
-            <el-button v-power="['老师','学生','管理员']" @click="removeUser(scope.row)" type="text">删除</el-button>
+            <el-button v-power="['老师','学生']" @click="removeUser(scope.row)" type="text">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

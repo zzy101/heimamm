@@ -10,6 +10,7 @@ export function loginFrom(data) {
     return Interface({
         url: "/login",
         method: "post",
+        withCredentials: true,
         data
     })
 }

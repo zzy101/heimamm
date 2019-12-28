@@ -65,7 +65,7 @@
             <el-upload
               class="avatar-uploader"
               name="image"
-              action="http://127.0.0.1/heimamm/public/uploads"
+              :action="upload"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
@@ -139,7 +139,7 @@
 import { loginFrom, note, registerFrom } from "../../API/login.js";
 
 // 导入token的抽取层 - utils/token.js
-import { setToken } from "../../utils/token.js";
+import { setToken, getToken } from "../../utils/token.js";
 
 // 导入 手机 - 邮箱验证的抽取层
 import { checkPhone, checkEmail } from "../../utils/validator.js";
@@ -263,7 +263,8 @@ export default {
       imageUrl: "", //头像路径
       registerSendsms: `${process.env.VUE_APP_baseUrl}/captcha?type=sendsms`, //注册模块 图形码
       regIconUrl: "", //响应回来的头像参数
-      isDisabled: 0 //短信验证码是否禁用
+      isDisabled: 0, //短信验证码是否禁用
+      upload: `${process.env.VUE_APP_baseUrl}/uploads`
     };
   },
   methods: {
@@ -298,9 +299,15 @@ export default {
               // window.console.log(res);
               // 把token 缓存到本地
               // localStorage.setItem('token',res.data.data.token)
-              setToken(res.data.data.token);
-              this.$message.success("登录成功");
-              this.$router.push("/index"); //跳转到首页
+                window.console.log(res);
+              if (res.data.code === 200) {
+                setToken(res.data.data.token);
+                window.console.log(getToken());
+                this.$message.success("登录成功");
+                this.$router.push("/index"); //跳转到首页
+              }else {
+                this.$message.error(res.data.message)
+              }
             });
           } else {
             this.$message.error("输入的内容有误或者不全");
